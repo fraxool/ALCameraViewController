@@ -298,7 +298,7 @@ public class ALCameraViewController: UIViewController {
         }
         
         if connection.enabled {
-            cameraButton.enabled = false
+            //cameraButton.enabled = false
             cameraView.capturePhoto { image in
                 self.saveImage(image)
             }
