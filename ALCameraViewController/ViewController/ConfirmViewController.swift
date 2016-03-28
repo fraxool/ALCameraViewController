@@ -8,6 +8,7 @@
 
 import UIKit
 import Photos
+import AVFoundation
 
 internal class ConfirmViewController: UIViewController, UIScrollViewDelegate {
     
@@ -23,13 +24,16 @@ internal class ConfirmViewController: UIViewController, UIScrollViewDelegate {
     var verticalPadding: CGFloat = 30
     var horizontalPadding: CGFloat = 30
     
+    var isFront: Bool!
+    
     var onComplete: ALCameraViewCompletion?
     
     var asset: PHAsset!
     
-    internal init(asset: PHAsset, allowsCropping: Bool) {
+    internal init(asset: PHAsset, allowsCropping: Bool, isFront: Bool) {
         self.allowsCropping = allowsCropping
         self.asset = asset
+        self.isFront = isFront
         super.init(nibName: "ConfirmViewController", bundle: CameraGlobals.shared.bundle)
         commonInit()
     }
@@ -136,10 +140,17 @@ internal class ConfirmViewController: UIViewController, UIScrollViewDelegate {
         }
         
         buttonActions()
+                
+        let flippedImage: UIImage
         
-        let flippedImage = UIImage(CGImage: image.CGImage, scale: image.scale, orientation:.LeftMirrored)
+        if(self.isFront == true)
+        {
+            flippedImage = UIImage(CGImage: image.CGImage!, scale: image.scale, orientation: .UpMirrored)
+        } else {
+            flippedImage = image
+        }
         
-        imageView.image = image
+        imageView.image = flippedImage
         imageView.sizeToFit()
         view.setNeedsLayout()
     }
@@ -220,7 +231,17 @@ internal class ConfirmViewController: UIViewController, UIScrollViewDelegate {
         
         let fetcher = SingleImageFetcher()
             .onSuccess { image in
-                self.onComplete?(image)
+                
+                let flippedImage: UIImage
+                
+                if(self.isFront == true)
+                {
+                    flippedImage = UIImage(CGImage: image.CGImage!, scale: image.scale, orientation: .UpMirrored)
+                } else {
+                    flippedImage = image
+                }
+                
+                self.onComplete?(flippedImage)
                 self.spinner.stopAnimating()
            }
             .onFailure { error in            
