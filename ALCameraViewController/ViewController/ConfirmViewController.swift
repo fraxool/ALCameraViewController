@@ -137,6 +137,8 @@ internal class ConfirmViewController: UIViewController, UIScrollViewDelegate {
         
         buttonActions()
         
+        let flippedImage = UIImage(CGImage: image.CGImage, scale: image.scale, orientation:.LeftMirrored)
+        
         imageView.image = image
         imageView.sizeToFit()
         view.setNeedsLayout()
