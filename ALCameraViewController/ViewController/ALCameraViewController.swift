@@ -23,7 +23,7 @@ public extension ALCameraViewController {
         
         imagePicker.onSelectionComplete = { asset in
             if asset != nil {
-                let confirmController = ConfirmViewController(asset: asset!, allowsCropping: croppingEnabled)
+                let confirmController = ConfirmViewController(asset: asset!, allowsCropping: croppingEnabled, isFront: false)
                 confirmController.onComplete = { image in
                     if let i = image {
                         completion(i)
@@ -386,7 +386,17 @@ public class ALCameraViewController: UIViewController {
     internal func layoutCameraResult(asset: PHAsset) {
         cameraView.stopSession()
         
-        let confirmViewController = ConfirmViewController(asset: asset, allowsCropping: allowCropping)
+        let confirmViewController: ConfirmViewController
+        
+        if(cameraView.currentPosition == AVCaptureDevicePosition.Front) {
+
+            confirmViewController = ConfirmViewController(asset: asset, allowsCropping: allowCropping, isFront: true)
+        
+        } else {
+            
+            confirmViewController = ConfirmViewController(asset: asset, allowsCropping: allowCropping, isFront: false)
+            
+        }
         
         confirmViewController.onComplete = { image in
             if image == nil {
@@ -394,6 +404,7 @@ public class ALCameraViewController: UIViewController {
             } else {
                 self.onCompletion?(image)
             }
+            
         }
         confirmViewController.modalTransitionStyle = UIModalTransitionStyle.CrossDissolve
         
